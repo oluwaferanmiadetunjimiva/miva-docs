@@ -1,0 +1,36 @@
+[
+    {
+        "id": "133a2235-8b87-4db4-a6d9-eedd0ed08118",
+        "name": "LMS Backend API",
+        "slug": "lms-backend-api",
+        "environments": [
+            {
+                "name": "Staging",
+                "url": "http://localhost:8081",
+                "route": "/api/openapi.yaml"
+            },
+            {
+                "name": "Production",
+                "url": "http://localhost:8081",
+                "route": "/api/openapi.yaml"
+            }
+        ]
+    },
+    {
+        "id": "83582a85-eade-4cab-a990-020d1910564c",
+        "name": "SIS Backend API",
+        "slug": "sis-backend-api",
+        "environments": [
+            {
+                "name": "Production",
+                "url": "http://localhost:8087",
+                "route": "/"
+            },
+            {
+                "name": "Staging",
+                "url": "http://localhost:8087",
+                "route": "/"
+            }
+        ]
+    }
+]
