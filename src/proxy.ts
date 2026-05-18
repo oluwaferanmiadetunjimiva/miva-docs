@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 export function proxy(request: NextRequest) {
   const isApi = request.nextUrl.pathname.startsWith("/api/");
   if (isApi) return NextResponse.next();
+  
   const isStatic =
     request.nextUrl.pathname.startsWith("/_next/") ||
     request.nextUrl.pathname.startsWith("/favicon") ||
