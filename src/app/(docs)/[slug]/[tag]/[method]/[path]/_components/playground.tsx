@@ -92,6 +92,30 @@ function parseQueryRowsFromAbsoluteUrl(rawUrl: string): QueryRow[] | null {
   }
 }
 
+function resolvePathWithQuery(
+  path: string,
+  pathParams: ParamDef[],
+  queryParams: ParamDef[],
+  paramValues: Record<string, string>,
+): string {
+  let resolvedPath = path;
+  for (const p of pathParams) {
+    const v = (paramValues[p.name] ?? "").trim();
+    if (!v) continue;
+    resolvedPath = resolvedPath.replaceAll(`{${p.name}}`, encodeURIComponent(v));
+  }
+
+  const qs = new URLSearchParams();
+  for (const p of queryParams) {
+    const v = (paramValues[p.name] ?? "").trim();
+    if (!v) continue;
+    qs.set(p.name, v);
+  }
+
+  const search = qs.toString();
+  return search ? `${resolvedPath}?${search}` : resolvedPath;
+}
+
 function applyQueryRowsToAbsoluteUrl(rawUrl: string, rows: QueryRow[]): string | null {
   try {
     const parsed = new URL(rawUrl);
@@ -136,7 +160,6 @@ export default function Playground({
   const [tokenDraft, setTokenDraft] = useState(token ?? "");
 
   const baseUrl = apiBaseUrl ?? "";
-  const requestUrl = `${baseUrl}${path ?? ""}`;
 
   const normalizedMethod = method.toLowerCase();
   const isEndpointGet = normalizedMethod === "get";
@@ -190,6 +213,12 @@ export default function Playground({
   const [activeResponseTab, setActiveResponseTab] = useState<"body" | "headers" | "raw">("body");
 
   const [paramValues, setParamValues] = useState<Record<string, string>>({});
+
+  const requestUrl = useMemo(() => {
+    if (!path) return baseUrl;
+    return `${baseUrl}${resolvePathWithQuery(path, pathParams, queryParams, paramValues)}`;
+  }, [baseUrl, path, pathParams, queryParams, paramValues]);
+
   const [manualHeaderRows, setManualHeaderRows] = useState<ManualHeaderRow[]>([]);
   const [headerValueByLowerName, setHeaderValueByLowerName] = useState<Record<string, string>>({});
 
@@ -285,28 +314,23 @@ export default function Playground({
   function buildPathWithQuery(): { ok: true; pathWithQuery: string } | { ok: false; error: string } {
     if (!path) return { ok: false, error: "Missing OpenAPI path for this operation." };
 
-    let resolvedPath = path;
     for (const p of pathParams) {
       const v = (paramValues[p.name] ?? "").trim();
       if (p.required && !v) return { ok: false, error: `Missing required path param: ${p.name}` };
-      if (!v) continue;
-      resolvedPath = resolvedPath.replaceAll(`{${p.name}}`, encodeURIComponent(v));
     }
 
-    if (/\{[^}]+\}/.test(resolvedPath)) {
+    const pathWithQuery = resolvePathWithQuery(path, pathParams, queryParams, paramValues);
+
+    if (/\{[^}]+\}/.test(pathWithQuery.split("?")[0] ?? pathWithQuery)) {
       return { ok: false, error: "Some required path params are missing." };
     }
 
-    const qs = new URLSearchParams();
     for (const p of queryParams) {
       const v = (paramValues[p.name] ?? "").trim();
       if (p.required && !v) return { ok: false, error: `Missing required query param: ${p.name}` };
-      if (!v) continue;
-      qs.set(p.name, v);
     }
 
-    const search = qs.toString();
-    return { ok: true, pathWithQuery: search ? `${resolvedPath}?${search}` : resolvedPath };
+    return { ok: true, pathWithQuery };
   }
 
   function buildExtraHeaders(): { headers: Record<string, string>; error?: string } {

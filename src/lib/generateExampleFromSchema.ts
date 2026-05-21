@@ -1,5 +1,8 @@
 import { faker } from "@faker-js/faker";
 
+/** Fixed anchor so date helpers are identical on SSR and client hydration. */
+const EXAMPLE_REF_DATE = new Date("2020-01-01T00:00:00.000Z");
+
 type Schema = Record<string, unknown>;
 type Schemas = Record<string, unknown>;
 
@@ -64,8 +67,8 @@ function generateString(schema: Schema, keyName?: string): string {
 
   if (format === "email") return faker.internet.email();
   if (format === "uuid") return faker.string.uuid();
-  if (format === "date-time") return faker.date.recent().toISOString();
-  if (format === "date") return faker.date.recent().toISOString().slice(0, 10);
+  if (format === "date-time") return faker.date.recent({ refDate: EXAMPLE_REF_DATE }).toISOString();
+  if (format === "date") return faker.date.recent({ refDate: EXAMPLE_REF_DATE }).toISOString().slice(0, 10);
   if (format === "uri" || format === "url") return faker.internet.url();
 
   const key = normalizeKey(keyName);
@@ -192,7 +195,13 @@ function generateFromSchema(
 
 export function generateExampleFromSchema(inputSchema: Schema, schemas: Schemas, seedOrSalt: number | string): unknown {
   const seed = typeof seedOrSalt === "string" ? hash32(seedOrSalt) : seedOrSalt >>> 0;
+  const priorRefDate = faker.defaultRefDate();
   faker.seed(seed);
+  faker.setDefaultRefDate(EXAMPLE_REF_DATE);
 
-  return generateFromSchema(inputSchema, schemas, 0, new Set());
+  try {
+    return generateFromSchema(inputSchema, schemas, 0, new Set());
+  } finally {
+    faker.setDefaultRefDate(priorRefDate);
+  }
 }
