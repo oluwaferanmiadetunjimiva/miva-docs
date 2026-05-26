@@ -5,6 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { withEnvQuery } from "@/lib/docsNav";
 import { buildDocsOperationRoute, getPrimaryOpenApiTag } from "@/lib/helpers";
 import { Method } from "@/components/badges";
+import { cn } from "@/lib/cn";
 
 type Props = {
   url: string;
@@ -32,14 +33,15 @@ export default function NavItem({ method, operationId, url, tags }: Props) {
       <Link
         href={href}
         aria-current={isActive ? "page" : undefined}
-        className={
+        className={cn(
+          "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] transition-all duration-200 ease-[var(--ease-apple)]",
           isActive
-            ? "flex items-center gap-3 rounded-lg border border-(--border) bg-(--surface) px-2 py-2 text-(--text) shadow-sm ring-1 ring-(--surface-3) transition-all duration-200 ease-out hover:-translate-y-px hover:shadow-md"
-            : "group flex items-center gap-3 rounded-lg px-2 py-2 text-(--text-muted) transition-all duration-200 ease-out hover:-translate-y-px hover:bg-(--surface-hover) hover:text-(--text) hover:shadow-sm"
-        }
+            ? "bg-(--surface) text-(--text) shadow-[var(--shadow-sm)] ring-1 ring-(--border)"
+            : "text-(--text-muted) hover:bg-(--surface-hover) hover:text-(--text)",
+        )}
       >
-        <Method method={method} />
-        <span className="truncate font-mono text-xs">{url}</span>
+        <Method method={method} className="shrink-0" />
+        <span className="truncate font-mono text-[12px] tracking-tight">{url}</span>
       </Link>
     </li>
   );

@@ -4,8 +4,8 @@ import type { OpenApiRequestBody } from "@/lib/openapiSpec";
 import { Required } from "@/components/badges";
 import { prettyPayload, copyToClipboard } from "@/lib/helpers";
 import { generateExampleFromSchema } from "@/lib/generateExampleFromSchema";
-import { useMemo } from "react";
-import { Copy } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Check, Copy, Sparkles } from "lucide-react";
 import { usePlaygroundBody } from "./playground-body-context";
 
 type Row = {
@@ -90,6 +90,8 @@ function getFieldMeta(schema: Record<string, unknown> | undefined): { label: str
 
 export default function RequestBody({ request_body, schemas, seedSalt }: Props) {
   const { applyExample } = usePlaygroundBody();
+  const [copied, setCopied] = useState(false);
+  const [applied, setApplied] = useState(false);
 
   const computed = useMemo<{ rows: Row[]; exampleText: string }>(() => {
     if (!request_body) {
@@ -139,39 +141,37 @@ export default function RequestBody({ request_body, schemas, seedSalt }: Props) 
 
   return (
     <>
-      <section className="max-w-3xl">
-        <h3 className="mb-4 border-b border-gray-100 pb-2 text-base font-semibold text-gray-900">Body Parameters</h3>
+      <section className="md-fade-in max-w-3xl">
+        <h3 className="mb-3 text-[13px] font-semibold tracking-tight text-(--text)">Body parameters</h3>
 
-        <div className="overflow-hidden rounded-xl border border-(--border) bg-(--surface) shadow-sm">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-gray-200 bg-gray-50/80 text-gray-600">
+        <div className="overflow-hidden rounded-xl border border-(--border) bg-(--surface) shadow-[var(--shadow-xs)]">
+          <table className="w-full text-left text-[13px]">
+            <thead className="border-b border-(--border) bg-(--surface-2) text-(--text-subtle)">
               <tr>
-                <th className="px-4 py-3 font-medium">Name</th>
-                <th className="px-4 py-3 font-medium">Type</th>
-                <th className="px-4 py-3 font-medium">Description</th>
+                <th className="px-4 py-2.5 text-[11px] font-medium tracking-wider uppercase">Name</th>
+                <th className="px-4 py-2.5 text-[11px] font-medium tracking-wider uppercase">Type</th>
+                <th className="px-4 py-2.5 text-[11px] font-medium tracking-wider uppercase">Description</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-(--border)">
               {computed.rows.map((row) => (
-                <tr key={row.name} className="divide-y divide-gray-200 bg-white text-gray-700 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs">
+                <tr key={row.name} className="bg-(--surface) text-(--text-muted) transition-colors">
+                  <td className="px-4 py-3 font-mono text-[12.5px] text-(--text)">
                     {row.name}
                     {row.required && <Required />}
                   </td>
-
-                  <td className="px-4 py-3 font-mono text-xs text-gray-500">{row.type}</td>
-
+                  <td className="px-4 py-3 font-mono text-[12.5px] text-(--text-subtle)">{row.type}</td>
                   <td className="px-4 py-3">
-                    {row.description && <div className="mb-2">{row.description}</div>}
+                    {row.description && <div className="mb-1.5 leading-relaxed">{row.description}</div>}
                     {row.meta.length > 0 && (
-                      <div className="flex flex-wrap gap-2 text-xs text-(--text-muted)">
+                      <div className="flex flex-wrap gap-1.5">
                         {row.meta.map((m) => (
                           <span
                             key={`${row.name}-${m.label}`}
-                            className="rounded border border-(--border) bg-(--surface-2) px-2 py-0.5 font-mono text-[11px]"
+                            className="rounded-md bg-(--surface-3) px-1.5 py-0.5 font-mono text-[11px] text-(--text-subtle) ring-1 ring-inset ring-(--border)"
                           >
-                            {m.label}: {m.value}
+                            <span className="text-(--text-muted)">{m.label}:</span> {m.value}
                           </span>
                         ))}
                       </div>
@@ -184,36 +184,48 @@ export default function RequestBody({ request_body, schemas, seedSalt }: Props) 
         </div>
       </section>
 
-      <section>
-        <h3 className="mb-4 border-b border-gray-100 pb-2 text-base font-semibold text-gray-900">
-          Request Payload Example
-        </h3>
+      <section className="md-fade-in">
+        <h3 className="mb-3 text-[13px] font-semibold tracking-tight text-(--text)">Request payload example</h3>
 
-        <div className="overflow-hidden rounded-xl border border-(--border-strong) bg-[#111827] shadow-sm">
-          <div className="group flex items-center justify-between border-b border-(--border-strong) bg-[rgba(31,41,55,0.5)] px-5 py-2.5 font-mono text-xs font-medium text-(--text-subtle) transition-colors hover:bg-[#1f2937]">
-            <span>application/json</span>
-
+        <div className="overflow-hidden rounded-xl border border-(--border) bg-[#0c0c10] shadow-[var(--shadow-sm)]">
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-2 font-mono text-[11.5px] font-medium text-white/55">
             <div className="flex items-center gap-2">
-              <button
-                className="flex items-center gap-1.5 rounded bg-[rgba(55,65,81,0.5)] px-2 py-1 text-[rgba(229,231,235,0.9)] transition-colors group-hover:opacity-100 hover:bg-[rgba(75,85,99,1)] hover:text-white focus:opacity-100"
-                onClick={() => copyToClipboard(computed.exampleText)}
-              >
-                <Copy className="h-3 w-3" />
-                Copy
-              </button>
+              <span className="flex gap-1">
+                <span className="h-2 w-2 rounded-full bg-[#ff5f57]/85" />
+                <span className="h-2 w-2 rounded-full bg-[#febc2e]/85" />
+                <span className="h-2 w-2 rounded-full bg-[#28c840]/85" />
+              </span>
+              <span className="ml-1.5">application/json</span>
+            </div>
 
+            <div className="flex items-center gap-1">
+              <button
+                className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11.5px] text-white/65 transition-colors duration-150 hover:bg-white/8 hover:text-white"
+                onClick={() => {
+                  copyToClipboard(computed.exampleText);
+                  setCopied(true);
+                  window.setTimeout(() => setCopied(false), 1400);
+                }}
+              >
+                {copied ? <Check className="h-3 w-3 text-[#7ee2a3]" /> : <Copy className="h-3 w-3" />}
+                {copied ? "Copied" : "Copy"}
+              </button>
               <button
                 type="button"
-                onClick={() => applyExample(computed.exampleText)}
-                className="flex items-center gap-1.5 rounded bg-emerald-500/20 px-2 py-1 text-emerald-400 transition-colors group-hover:opacity-100 hover:bg-emerald-500/30 hover:text-emerald-300 focus:opacity-100"
+                onClick={() => {
+                  applyExample(computed.exampleText);
+                  setApplied(true);
+                  window.setTimeout(() => setApplied(false), 1400);
+                }}
+                className="inline-flex items-center gap-1.5 rounded-md bg-(--accent)/20 px-2 py-1 text-[11.5px] text-[#7eb8ff] transition-colors duration-150 hover:bg-(--accent)/30 hover:text-[#a8d0ff]"
               >
-                <span>✨</span>
-                Use this example
+                <Sparkles className="h-3 w-3" />
+                {applied ? "Applied" : "Use this example"}
               </button>
             </div>
           </div>
 
-          <pre className="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed text-[rgba(229,231,235,0.9)]">
+          <pre className="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed text-white/85">
             <code>{computed.exampleText}</code>
           </pre>
         </div>

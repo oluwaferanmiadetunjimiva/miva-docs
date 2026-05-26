@@ -8,7 +8,7 @@ import type { OpenApiParameter } from "@/lib/openapiSpec";
 import { jwtDecode } from "jwt-decode";
 import { useMemo, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Copy, Trash2, Send, ChevronDown } from "lucide-react";
+import { Check, Copy, Trash2, Send, ChevronDown, KeyRound } from "lucide-react";
 import { usePlaygroundBody } from "./playground-body-context";
 import { cn } from "@/lib/cn";
 
@@ -397,12 +397,12 @@ export default function Playground({
   }
 
   return (
-    <aside className="z-10 hidden w-lg shrink-0 flex-col border-l border-(--border) bg-(--surface-2) shadow-[-4px_0_24px_rgba(0,0,0,0.02)] xl:flex">
-      <div className="flex flex-col gap-4 space-y-5 border-b border-(--border) bg-(--surface) p-6">
-        <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
-          <h3 className="text-base font-semibold text-gray-900">Playground</h3>
+    <aside className="z-10 hidden w-lg shrink-0 flex-col border-l border-(--border) bg-(--surface-2)/80 backdrop-blur-xl xl:flex">
+      <div className="flex flex-col gap-4 border-b border-(--border) bg-(--surface) px-6 pt-5 pb-5">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-[15px] font-semibold tracking-tight text-(--text)">Playground</h3>
 
-          <div className="flex w-max items-center rounded-lg border border-gray-200 bg-gray-100/80 p-1 shadow-inner">
+          <div className="inline-flex items-center rounded-lg bg-(--surface-3) p-0.5 ring-1 ring-inset ring-(--border)">
             {TABS.map((tab) => (
               <button
                 key={tab}
@@ -429,8 +429,10 @@ export default function Playground({
                   setActiveTab(tab);
                 }}
                 className={cn(
-                  "rounded-md px-4 py-1.5 text-xs font-medium text-gray-500 capitalize transition-colors hover:text-gray-700",
-                  tab === activeTab && "border border-gray-200 bg-white",
+                  "rounded-md px-3 py-1 text-[11.5px] font-medium capitalize transition-all duration-200",
+                  tab === activeTab
+                    ? "bg-(--surface) text-(--text) shadow-[var(--shadow-xs)]"
+                    : "text-(--text-muted) hover:text-(--text)",
                 )}
               >
                 {tab}
@@ -450,7 +452,7 @@ export default function Playground({
                   const destination = `/api/select-service?slug=${encodeURIComponent(serviceSlug)}&env=${encodeURIComponent(next)}&returnTo=${encodeURIComponent(returnTo)}`;
                   window.location.assign(destination);
                 }}
-                className="cursor-pointer appearance-none rounded-lg border border-indigo-200 bg-indigo-50 py-1.5 pr-8 pl-3 text-xs font-medium text-indigo-700 shadow-sm transition-shadow outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="cursor-pointer appearance-none rounded-lg border border-(--accent-border) bg-(--accent-soft) py-1 pr-7 pl-2.5 text-[11.5px] font-medium text-(--accent) outline-none transition-all focus:border-(--accent) focus:ring-2 focus:ring-(--ring) hover:bg-(--accent-soft)/80"
               >
                 {environments.map((env) => (
                   <option key={env.name} value={env.name}>
@@ -458,17 +460,17 @@ export default function Playground({
                   </option>
                 ))}
               </select>
-              <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-indigo-400" />
+              <ChevronDown className="pointer-events-none absolute top-1/2 right-2 h-3 w-3 -translate-y-1/2 text-(--accent)" />
             </div>
           ) : null}
         </div>
 
-        <div className="flex overflow-hidden rounded-lg border border-(--border) bg-(--surface-2) shadow-sm transition-all focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20">
+        <div className="flex overflow-hidden rounded-lg border border-(--border) bg-(--surface) shadow-[var(--shadow-xs)] transition-all duration-200 focus-within:border-(--border-focus) focus-within:ring-2 focus-within:ring-(--ring)">
           {activeTab === "custom" ? (
             <select
               value={effectiveMethod}
               onChange={(e) => setCustomMethod(e.target.value.toLowerCase())}
-              className="cursor-pointer border-r border-(--border) bg-(--surface-hover-2) px-3 py-2.5 font-mono text-xs font-semibold text-(--text-muted) focus:outline-none"
+              className="cursor-pointer border-r border-(--border) bg-(--surface-2) px-3 py-2 font-mono text-[11.5px] font-semibold text-(--text-muted) focus:outline-none"
             >
               {SUPPORTED_METHODS.map((m) => (
                 <option key={m} value={m}>
@@ -477,7 +479,7 @@ export default function Playground({
               ))}
             </select>
           ) : (
-            <span className="flex items-center border-r border-(--border) bg-(--surface-hover-2) px-4 py-2.5 font-mono text-xs font-semibold text-(--text-muted)">
+            <span className="flex items-center border-r border-(--border) bg-(--surface-2) px-3.5 py-2 font-mono text-[11.5px] font-semibold text-(--text-muted)">
               {method.toUpperCase()}
             </span>
           )}
@@ -492,15 +494,15 @@ export default function Playground({
               if (parsed) setCustomQueryRows(parsed);
             }}
             placeholder={activeTab === "custom" ? "https://api.example.com/path?query=1" : undefined}
-            className="flex-1 truncate bg-transparent px-4 py-2.5 font-mono text-sm text-(--text) focus:outline-none"
+            className="flex-1 truncate bg-transparent px-3 py-2 font-mono text-[12.5px] text-(--text) placeholder:text-(--text-subtle) focus:outline-none"
           />
         </div>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col bg-(--surface)">
         {activeTab !== "custom" && (
-          <div className="border-b border-(--border) bg-(--surface-3) p-6">
-            <label className="mb-2 block text-xs font-semibold tracking-wider text-(--text-muted) uppercase">
+          <div className="border-b border-(--border) bg-(--surface-2)/60 px-6 py-5">
+            <label className="mb-2 block text-[10.5px] font-semibold tracking-[0.12em] text-(--text-subtle) uppercase">
               Bearer Token
             </label>
             <button
@@ -509,17 +511,17 @@ export default function Playground({
                 setTokenDraft(token ?? "");
                 setIsTokenModalOpen(true);
               }}
-              className="group relative w-full rounded-lg border border-(--border) bg-(--surface) py-2.5 pr-4 pl-10 text-left font-mono text-sm text-(--text) shadow-sm transition-all hover:bg-(--surface-hover) focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+              className="group relative w-full rounded-lg border border-(--border) bg-(--surface) py-2 pr-4 pl-9 text-left font-mono text-[12.5px] text-(--text) shadow-[var(--shadow-xs)] transition-all duration-200 hover:bg-(--surface-hover-2) focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) focus:outline-none"
               aria-label="Set bearer token"
             >
-              <span className="absolute top-1/2 left-3 -translate-y-1/2 text-lg text-(--text-subtle)">🔑</span>
+              <KeyRound className="absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-(--text-subtle)" />
               <span className={token ? "text-(--text)" : "text-(--text-subtle)"}>{tokenDisplay}</span>
-              <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs font-semibold text-(--text-subtle) opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[10.5px] font-medium text-(--text-subtle) opacity-0 transition-opacity duration-150 group-hover:opacity-100">
                 Edit
               </span>
             </button>
             {tokenTimes && (
-              <div className="mt-2 space-y-0.5 text-xs text-(--text-muted)">
+              <div className="mt-2 space-y-0.5 text-[11.5px] text-(--text-muted)">
                 {tokenTimes.issuedAt && <div>Issued at {tokenTimes.issuedAt}</div>}
                 {tokenTimes.expiresAt && <div>Expires at {tokenTimes.expiresAt}</div>}
               </div>
@@ -528,16 +530,17 @@ export default function Playground({
         )}
 
         <div className="flex items-end justify-between border-b border-(--border) bg-(--surface) px-6 pt-3">
-          <div className="flex gap-4">
+          <div className="flex gap-5">
             {(hasParams || activeTab === "custom") && (
               <button
                 type="button"
                 onClick={() => setActiveComposerTab("params")}
-                className={
+                className={cn(
+                  "relative pb-2.5 text-[12.5px] font-medium transition-colors duration-200",
                   activeComposerTab === "params"
-                    ? "border-b-2 border-(--text) pb-3 text-sm font-semibold text-(--text)"
-                    : "border-b-2 border-transparent pb-3 text-sm font-medium text-(--text-muted) transition-colors hover:text-(--text)"
-                }
+                    ? "text-(--text) after:absolute after:right-0 after:bottom-[-1px] after:left-0 after:h-[2px] after:rounded-full after:bg-(--accent)"
+                    : "text-(--text-muted) hover:text-(--text)",
+                )}
               >
                 Params
               </button>
@@ -545,15 +548,16 @@ export default function Playground({
             <button
               type="button"
               onClick={() => setActiveComposerTab("headers")}
-              className={
+              className={cn(
+                "relative flex items-center gap-1.5 pb-2.5 text-[12.5px] font-medium transition-colors duration-200",
                 activeComposerTab === "headers"
-                  ? "flex items-center gap-1.5 border-b-2 border-(--text) pb-3 text-sm font-semibold text-(--text)"
-                  : "flex items-center gap-1.5 border-b-2 border-transparent pb-3 text-sm font-medium text-(--text-muted) transition-colors hover:text-(--text)"
-              }
+                  ? "text-(--text) after:absolute after:right-0 after:bottom-[-1px] after:left-0 after:h-[2px] after:rounded-full after:bg-(--accent)"
+                  : "text-(--text-muted) hover:text-(--text)",
+              )}
             >
               Headers
               {headersCount > 0 && (
-                <span className="rounded bg-(--surface-hover) px-1.5 py-0.5 text-[10px] font-bold text-(--text-muted)">
+                <span className="rounded-md bg-(--surface-3) px-1.5 py-0.5 text-[10px] font-semibold text-(--text-muted) ring-1 ring-inset ring-(--border)">
                   {headersCount}
                 </span>
               )}
@@ -562,23 +566,24 @@ export default function Playground({
               type="button"
               onClick={() => setActiveComposerTab("body")}
               disabled={isGet}
-              className={
+              className={cn(
+                "relative pb-2.5 text-[12.5px] font-medium transition-colors duration-200",
                 isGet
-                  ? "cursor-not-allowed border-b-2 border-transparent pb-3 text-sm font-medium text-(--text-subtle) opacity-60"
+                  ? "cursor-not-allowed text-(--text-subtle) opacity-60"
                   : activeComposerTab === "body"
-                    ? "border-b-2 border-(--text) pb-3 text-sm font-semibold text-(--text)"
-                    : "border-b-2 border-transparent pb-3 text-sm font-medium text-(--text-muted) transition-colors hover:text-(--text)"
-              }
-              title={isGet ? "GET requests don’t have a body" : undefined}
+                    ? "text-(--text) after:absolute after:right-0 after:bottom-[-1px] after:left-0 after:h-[2px] after:rounded-full after:bg-(--accent)"
+                    : "text-(--text-muted) hover:text-(--text)",
+              )}
+              title={isGet ? "GET requests don't have a body" : undefined}
             >
               Body
             </button>
           </div>
           {prefilledFromExample && (
-            <div className="flex items-center pb-3">
-              <span className="flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 shadow-sm">
-                <span className="text-sm text-emerald-500">✓</span>
-                Prefilled from example
+            <div className="flex items-center pb-2.5">
+              <span className="md-fade-in inline-flex items-center gap-1.5 rounded-md bg-(--accent-soft) px-2 py-0.5 text-[11px] font-medium text-(--accent) ring-1 ring-inset ring-(--accent-border)">
+                <Check className="h-3 w-3" />
+                Prefilled
               </span>
             </div>
           )}
@@ -586,7 +591,7 @@ export default function Playground({
 
         <div className="flex min-h-0 flex-1 flex-col bg-(--surface) p-6">
           {activeComposerTab === "params" && (hasParams || activeTab === "custom") && (
-            <div className="flex-1 space-y-5 overflow-auto rounded-lg border border-(--border) bg-(--bg) p-4 shadow-inner">
+            <div className="flex-1 space-y-5 overflow-auto rounded-lg border border-(--border) bg-(--surface-2) p-4">
               {activeTab === "custom" ? (
                 <>
                   {!customUrl.trim() ? (
@@ -609,7 +614,7 @@ export default function Playground({
                                   <div key={`custom-path-${name}`} className="space-y-1.5">
                                     <div className="flex items-center justify-between">
                                       <label className="font-mono text-xs font-semibold text-(--text)">{name}</label>
-                                      <span className="rounded bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700">
+                                      <span className="rounded-md bg-[#fde9ea] px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-[#b8232f] ring-1 ring-inset ring-[#f1c8cb] dark:bg-[#ff453a]/12 dark:text-[#ff9b95] dark:ring-[#ff453a]/25">
                                         required
                                       </span>
                                     </div>
@@ -621,7 +626,7 @@ export default function Playground({
                                           [name]: e.target.value,
                                         }))
                                       }
-                                      className="w-full rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-sm text-(--text) shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                                      className="w-full rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-sm text-(--text) shadow-sm focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) focus:outline-none"
                                       placeholder="value"
                                     />
                                   </div>
@@ -643,7 +648,7 @@ export default function Playground({
                                 return next;
                               })
                             }
-                            className="rounded-md bg-gray-900 px-2.5 py-1.5 text-[11px] font-semibold text-white hover:bg-gray-800"
+                            className="rounded-md bg-(--text) px-2.5 py-1 text-[11px] font-semibold text-(--surface) transition-colors duration-150 hover:opacity-90"
                           >
                             Add query param
                           </button>
@@ -665,7 +670,7 @@ export default function Playground({
                                       return next;
                                     })
                                   }
-                                  className="w-1/2 rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-sm text-(--text) shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                                  className="w-1/2 rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-sm text-(--text) shadow-sm focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) focus:outline-none"
                                   placeholder="name"
                                 />
                                 <input
@@ -678,7 +683,7 @@ export default function Playground({
                                       return next;
                                     })
                                   }
-                                  className="w-1/2 rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-sm text-(--text) shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                                  className="w-1/2 rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-sm text-(--text) shadow-sm focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) focus:outline-none"
                                   placeholder="value"
                                 />
                                 <button
@@ -694,7 +699,7 @@ export default function Playground({
                                   className="shrink-0 rounded-md bg-transparent px-2 py-2 text-xs font-semibold text-(--text-muted) hover:bg-(--surface-hover)"
                                   aria-label="Remove query param"
                                 >
-                                  <Trash2 className="h-3 w-3 text-red-600" />
+                                  <Trash2 className="h-3 w-3 text-[#b8232f] dark:text-[#ff9b95]" />
                                 </button>
                               </div>
                             ))}
@@ -719,7 +724,7 @@ export default function Playground({
                             <div className="flex items-center justify-between">
                               <label className="font-mono text-xs font-semibold text-(--text)">{p.name}</label>
                               {p.required && (
-                                <span className="rounded bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700">
+                                <span className="rounded-md bg-[#fde9ea] px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-[#b8232f] ring-1 ring-inset ring-[#f1c8cb] dark:bg-[#ff453a]/12 dark:text-[#ff9b95] dark:ring-[#ff453a]/25">
                                   required
                                 </span>
                               )}
@@ -727,7 +732,7 @@ export default function Playground({
                             <input
                               value={paramValues[p.name] ?? ""}
                               onChange={(e) => setParamValues((s) => ({ ...s, [p.name]: e.target.value }))}
-                              className="w-full rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-sm text-(--text) shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                              className="w-full rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-sm text-(--text) shadow-sm focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) focus:outline-none"
                               placeholder={p.type ? `${p.type}` : "value"}
                             />
                             {p.description && <div className="text-xs text-(--text-muted)">{p.description}</div>}
@@ -746,7 +751,7 @@ export default function Playground({
                             <div className="flex items-center justify-between">
                               <label className="font-mono text-xs font-semibold text-(--text)">{p.name}</label>
                               {p.required && (
-                                <span className="rounded bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700">
+                                <span className="rounded-md bg-[#fde9ea] px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-[#b8232f] ring-1 ring-inset ring-[#f1c8cb] dark:bg-[#ff453a]/12 dark:text-[#ff9b95] dark:ring-[#ff453a]/25">
                                   required
                                 </span>
                               )}
@@ -755,7 +760,7 @@ export default function Playground({
                               <select
                                 value={paramValues[p.name] ?? ""}
                                 onChange={(e) => setParamValues((s) => ({ ...s, [p.name]: e.target.value }))}
-                                className="w-full rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-sm text-(--text) shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                                className="w-full rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-sm text-(--text) shadow-sm focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) focus:outline-none"
                               >
                                 <option value="">Select…</option>
                                 {p.enumValues.map((v) => (
@@ -768,7 +773,7 @@ export default function Playground({
                               <input
                                 value={paramValues[p.name] ?? ""}
                                 onChange={(e) => setParamValues((s) => ({ ...s, [p.name]: e.target.value }))}
-                                className="w-full rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-sm text-(--text) shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                                className="w-full rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-sm text-(--text) shadow-sm focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) focus:outline-none"
                                 placeholder={p.type ? `${p.type}` : "value"}
                               />
                             )}
@@ -784,7 +789,7 @@ export default function Playground({
           )}
 
           {activeComposerTab === "headers" && (
-            <div className="flex-1 space-y-3 overflow-auto rounded-lg border border-(--border) bg-(--bg) p-4 shadow-inner">
+            <div className="flex-1 space-y-3 overflow-auto rounded-lg border border-(--border) bg-(--surface-2) p-4">
               <div className="text-xs text-(--text-muted)">
                 Add extra headers. Reserved headers are managed automatically (Authorization, Accept, Content-Type,
                 etc.).
@@ -801,7 +806,7 @@ export default function Playground({
                         {row.source === "openapi" ? (
                           <div className="flex w-0 min-w-0 flex-1 items-center rounded-md border border-(--border) bg-(--surface-hover) px-3 py-2 font-mono text-xs text-(--text-muted)">
                             <span className="truncate">{row.name}</span>
-                            {row.required && <Required className="ml-2 shrink-0 text-red-500" />}
+                            {row.required && <Required className="ml-2 shrink-0" />}
                           </div>
                         ) : (
                           <input
@@ -815,7 +820,7 @@ export default function Playground({
                               );
                             }}
                             placeholder="Header-Name"
-                            className="w-0 min-w-0 flex-1 rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-xs text-(--text) shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                            className="w-0 min-w-0 flex-1 rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-xs text-(--text) shadow-sm focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) focus:outline-none"
                           />
                         )}
                       </div>
@@ -836,7 +841,7 @@ export default function Playground({
                             );
                           }}
                           placeholder="value"
-                          className="w-0 min-w-0 flex-1 rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-xs text-(--text) shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                          className="w-0 min-w-0 flex-1 rounded-md border border-(--border) bg-(--surface) px-3 py-2 font-mono text-xs text-(--text) shadow-sm focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) focus:outline-none"
                         />
                       </div>
 
@@ -856,7 +861,7 @@ export default function Playground({
                           className="shrink-0 rounded-md bg-transparent px-1 py-1 text-xs font-semibold text-(--text-muted) hover:bg-(--surface-hover)"
                           aria-label={row.source === "openapi" ? "Clear header value" : "Remove header"}
                         >
-                          <Trash2 className="h-3 w-3 text-red-600" />
+                          <Trash2 className="h-3 w-3 text-[#b8232f] dark:text-[#ff9b95]" />
                         </button>
                       )}
                     </div>
@@ -873,7 +878,7 @@ export default function Playground({
                         : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
                     setManualHeaderRows((s) => [...s, { id, name: "", value: "" }]);
                   }}
-                  className="rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white hover:bg-gray-800"
+                  className="rounded-md bg-(--text) px-2.5 py-1.5 text-[11.5px] font-semibold text-(--surface) transition-colors duration-150 hover:opacity-90"
                 >
                   Add header
                 </button>
@@ -882,7 +887,7 @@ export default function Playground({
           )}
 
           {activeComposerTab === "body" && (
-            <div className="relative flex-1 overflow-hidden rounded-lg border border-(--border) bg-(--bg) shadow-inner transition-all focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20">
+            <div className="relative flex-1 overflow-hidden rounded-lg border border-(--border) bg-(--surface-2) transition-all duration-150 focus-within:border-(--border-focus) focus-within:ring-2 focus-within:ring-(--ring)">
               {isGet ? (
                 <div className="p-4 text-sm text-(--text-muted)">GET requests don’t have a body.</div>
               ) : (
@@ -906,7 +911,7 @@ export default function Playground({
           )}
 
           {sendError && (
-            <div className="mt-4 rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-800">
+            <div className="md-fade-in mt-4 rounded-md bg-[#fde9ea] px-3 py-2 text-[12px] font-medium text-[#b8232f] ring-1 ring-inset ring-[#f1c8cb] dark:bg-[#ff453a]/10 dark:text-[#ff9b95] dark:ring-[#ff453a]/25">
               {sendError}
             </div>
           )}
@@ -962,88 +967,68 @@ export default function Playground({
                 setIsSending(false);
               }
             }}
-            className={
+            className={cn(
+              "mt-6 flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-[13.5px] font-semibold text-white transition-all duration-200 ease-[var(--ease-apple)]",
               !canSend || isSending
-                ? "mt-6 flex w-full cursor-not-allowed items-center justify-center gap-2.5 rounded-lg bg-gray-900/60 py-3.5 text-sm font-semibold text-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
-                : "mt-6 flex w-full items-center justify-center gap-2.5 rounded-lg bg-gray-900 py-3.5 text-sm font-semibold text-white shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition-all hover:bg-gray-800 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] active:scale-[0.99]"
-            }
+                ? "cursor-not-allowed bg-(--accent)/55 shadow-[var(--shadow-xs)]"
+                : "bg-(--accent) shadow-[var(--shadow-sm)] hover:bg-(--accent-hover) hover:shadow-[var(--shadow-md)] active:scale-[0.985] active:bg-(--accent-pressed)",
+            )}
           >
-            <Send className="h-4 w-4" />
-            {isSending ? "Sending…" : "Send Request"}
+            {isSending ? (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+            ) : (
+              <Send className="h-3.5 w-3.5" />
+            )}
+            {isSending ? "Sending…" : "Send request"}
           </button>
         </div>
       </div>
 
       {hasSubmitted && (
-        <div className="z-20 flex h-1/3 min-h-70 flex-col border-t border-(--border) bg-(--surface) shadow-[0_-4px_24px_rgba(0,0,0,0.02)]">
-          <div className="flex items-center justify-between border-b border-(--border) bg-[rgba(249,250,251,0.8)] px-6 py-3">
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center gap-4">
-                <span
-                  className={
-                    response
-                      ? response.status >= 200 && response.status < 300
-                        ? "flex items-center rounded-md border border-emerald-200 bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800 shadow-sm"
-                        : "flex items-center rounded-md border border-rose-200 bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-800 shadow-sm"
-                      : "flex items-center rounded-md border border-(--border) bg-(--surface-2) px-2.5 py-1 text-xs font-semibold text-(--text-muted) shadow-sm"
-                  }
-                >
-                  {response ? `${response.status} ${response.statusText}` : "—"}
+        <div className="md-fade-in z-20 flex h-1/3 min-h-70 flex-col border-t border-(--border) bg-(--surface)">
+          <div className="flex items-center justify-between border-b border-(--border) bg-(--surface-2)/80 px-6 py-2.5 backdrop-blur">
+            <div className="flex items-center gap-3">
+              <span
+                className={cn(
+                  "inline-flex items-center rounded-md px-2 py-0.5 font-mono text-[11.5px] font-semibold ring-1 ring-inset",
+                  response
+                    ? response.status >= 200 && response.status < 300
+                      ? "bg-[#e7f6ee] text-[#117a3f] ring-[#c8e3d3] dark:bg-[#34c759]/12 dark:text-[#7ee2a3] dark:ring-[#34c759]/25"
+                      : "bg-[#fde9ea] text-[#b8232f] ring-[#f1c8cb] dark:bg-[#ff453a]/12 dark:text-[#ff9b95] dark:ring-[#ff453a]/25"
+                    : "bg-(--surface-3) text-(--text-muted) ring-(--border)",
+                )}
+              >
+                {response ? `${response.status} ${response.statusText}` : "—"}
+              </span>
+              <div className="h-3.5 w-px bg-(--border)" />
+              <div className="flex items-center gap-3 text-[11.5px]">
+                <span className="font-mono font-medium text-(--text-muted)">
+                  {response ? `${response.ms} ms` : "—"}
                 </span>
-                <div className="h-4 w-px bg-(--border-focus)" />
-                <div className="flex items-center gap-3 text-xs">
-                  <span className="flex items-center gap-1.5 text-(--text-muted)">
-                    <span className="text-(--text-subtle)">⏱</span>
-                    <span className="font-mono font-medium text-(--text-muted)">
-                      {response ? `${response.ms} ms` : "—"}
-                    </span>
-                  </span>
-                  <span className="flex items-center gap-1.5 text-(--text-muted)">
-                    <span className="text-(--text-subtle)">🗃</span>
-                    <span className="font-mono font-medium text-(--text-muted)">
-                      {response ? `${response.bytes} B` : "—"}
-                    </span>
-                  </span>
-                </div>
+                <span className="font-mono font-medium text-(--text-muted)">
+                  {response ? `${response.bytes} B` : "—"}
+                </span>
               </div>
             </div>
           </div>
 
           <div className="flex items-center justify-between border-b border-(--border) bg-(--surface) px-6">
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={() => setActiveResponseTab("body")}
-                className={
-                  activeResponseTab === "body"
-                    ? "border-b-2 border-(--text) py-2.5 text-sm font-semibold text-(--text)"
-                    : "border-b-2 border-transparent py-2.5 text-sm font-medium text-(--text-muted) transition-colors hover:text-(--text)"
-                }
-              >
-                Body
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveResponseTab("headers")}
-                className={
-                  activeResponseTab === "headers"
-                    ? "border-b-2 border-(--text) py-2.5 text-sm font-semibold text-(--text)"
-                    : "border-b-2 border-transparent py-2.5 text-sm font-medium text-(--text-muted) transition-colors hover:text-(--text)"
-                }
-              >
-                Headers
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveResponseTab("raw")}
-                className={
-                  activeResponseTab === "raw"
-                    ? "border-b-2 border-(--text) py-2.5 text-sm font-semibold text-(--text)"
-                    : "border-b-2 border-transparent py-2.5 text-sm font-medium text-(--text-muted) transition-colors hover:text-(--text)"
-                }
-              >
-                Raw
-              </button>
+            <div className="flex gap-5">
+              {(["body", "headers", "raw"] as const).map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setActiveResponseTab(t)}
+                  className={cn(
+                    "relative py-2.5 text-[12.5px] font-medium capitalize transition-colors duration-200",
+                    activeResponseTab === t
+                      ? "text-(--text) after:absolute after:right-0 after:bottom-[-1px] after:left-0 after:h-[2px] after:rounded-full after:bg-(--accent)"
+                      : "text-(--text-muted) hover:text-(--text)",
+                  )}
+                >
+                  {t}
+                </button>
+              ))}
             </div>
             <div className="flex items-center gap-3 py-1.5">
               <button
@@ -1080,7 +1065,7 @@ export default function Playground({
             </div>
           </div>
 
-          <div className="flex-1 overflow-auto bg-(--bg) p-6 shadow-inner">
+          <div className="flex-1 overflow-auto bg-(--surface-2)/60 p-6">
             {!response ? (
               <div className="text-sm text-(--text-muted)">{isSending ? "Sending request…" : "No response yet."}</div>
             ) : activeResponseTab === "headers" ? (
@@ -1113,7 +1098,7 @@ export default function Playground({
 
       {activeTab !== "custom" && isTokenModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          className="md-fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-md"
           role="dialog"
           aria-modal="true"
           aria-label="Bearer token modal"
@@ -1121,17 +1106,17 @@ export default function Playground({
             if (e.target === e.currentTarget) setIsTokenModalOpen(false);
           }}
         >
-          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-(--border) bg-(--surface) shadow-2xl">
-            <div className="border-b border-(--border) bg-(--surface-2) px-6 py-4">
-              <div className="text-sm font-semibold text-(--text)">Set Bearer Token</div>
-              <div className="mt-1 text-xs text-(--text-muted)">
-                Stored server-side and used as Authorization: Bearer &lt;token&gt;
+          <div className="md-scale-in w-full max-w-md overflow-hidden rounded-2xl border border-(--border) bg-(--surface) shadow-[var(--shadow-pop)]">
+            <div className="border-b border-(--border) px-6 py-4">
+              <div className="text-[14px] font-semibold tracking-tight text-(--text)">Set bearer token</div>
+              <div className="mt-0.5 text-[12.5px] text-(--text-muted)">
+                Stored server-side and sent as <span className="font-mono">Authorization: Bearer …</span>
               </div>
             </div>
 
             <div className="space-y-4 px-6 py-5">
-              <div className="space-y-2">
-                <label className="block text-xs font-semibold tracking-wider text-(--text-muted) uppercase">
+              <div className="space-y-1.5">
+                <label className="block text-[10.5px] font-semibold tracking-[0.12em] text-(--text-subtle) uppercase">
                   Token
                 </label>
                 <input
@@ -1139,22 +1124,22 @@ export default function Playground({
                   value={tokenDraft}
                   onChange={(e) => setTokenDraft(e.target.value)}
                   placeholder="paste token here"
-                  className="w-full rounded-lg border border-(--border) bg-(--surface) px-3 py-2.5 font-mono text-sm text-(--text) shadow-sm transition-all placeholder:text-(--text-subtle) focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+                  className="w-full rounded-lg border border-(--border) bg-(--surface) px-3 py-2 font-mono text-[12.5px] text-(--text) shadow-[var(--shadow-xs)] transition-all duration-150 placeholder:text-(--text-subtle) focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) focus:outline-none"
                   autoFocus
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-2">
+              <div className="flex items-center justify-end gap-2 pt-1">
                 <button
                   type="button"
-                  className="rounded-lg border border-(--border) bg-(--surface) px-4 py-2 text-sm font-semibold text-(--text-muted) transition-colors hover:bg-(--surface-hover)"
+                  className="rounded-lg px-3 py-1.5 text-[12.5px] font-medium text-(--text-muted) transition-colors duration-150 hover:bg-(--surface-hover) hover:text-(--text)"
                   onClick={() => setIsTokenModalOpen(false)}
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-gray-800"
+                  className="rounded-lg bg-(--accent) px-3.5 py-1.5 text-[12.5px] font-semibold text-white shadow-[var(--shadow-xs)] transition-all duration-150 hover:bg-(--accent-hover) active:scale-[0.98]"
                   onClick={async () => {
                     const next = tokenDraft.trim();
                     await setTokenServer({ serviceSlug, envName: activeEnvName, token: next });
@@ -1162,7 +1147,7 @@ export default function Playground({
                     setIsTokenModalOpen(false);
                   }}
                 >
-                  Submit
+                  Save
                 </button>
               </div>
             </div>

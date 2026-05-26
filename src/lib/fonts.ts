@@ -1,11 +1,13 @@
-import { Manrope, Fira_Code } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 
-export const manrope = Manrope({
+export const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-manrope",
+  variable: "--font-inter",
+  display: "swap",
 });
 
-export const firaCode = Fira_Code({
+export const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-fira-code",
+  variable: "--font-jetbrains-mono",
+  display: "swap",
 });

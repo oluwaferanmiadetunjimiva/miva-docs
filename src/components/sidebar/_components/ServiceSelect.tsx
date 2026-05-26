@@ -39,7 +39,7 @@ export default function ServiceSelect({ initialSlug }: Props) {
   const effectiveValue = value || initialSlug || fallbackSlug;
 
   return (
-    <div className="group relative cursor-pointer">
+    <div className="group relative">
       <select
         value={effectiveValue}
         onChange={(e) => {
@@ -56,7 +56,7 @@ export default function ServiceSelect({ initialSlug }: Props) {
             window.location.assign(`/api/select-service?slug=${encodeURIComponent(next)}`);
           }
         }}
-        className="w-full cursor-pointer appearance-none rounded-lg border border-gray-200 bg-white py-1.5 pr-8 pl-3 text-sm font-semibold tracking-tight text-gray-900 shadow-sm transition-shadow outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+        className="w-full cursor-pointer appearance-none rounded-lg border border-(--border) bg-(--surface) py-1.5 pr-8 pl-3 text-[13px] font-medium tracking-tight text-(--text) shadow-[var(--shadow-xs)] transition-all duration-150 outline-none focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) hover:bg-(--surface-hover-2)"
       >
         {services.length === 0 ? (
           <option value={effectiveValue}>{effectiveValue ? effectiveValue : "Loading…"}</option>
@@ -68,8 +68,7 @@ export default function ServiceSelect({ initialSlug }: Props) {
           ))
         )}
       </select>
-      <ChevronDown className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 transition-colors group-hover:text-gray-600" />
+      <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 h-3.5 w-3.5 -translate-y-1/2 text-(--text-subtle) transition-colors duration-150 group-hover:text-(--text-muted)" />
     </div>
   );
 }
-

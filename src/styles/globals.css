@@ -2,26 +2,50 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  /* Base */
-  --bg: #fafafa; /* matches `bg-[#FAFAFA]` from the static mock */
+  /* Surfaces */
+  --bg: #f5f5f7;
   --surface: #ffffff;
-  --surface-2: #fcfcfc; /* matches `bg-[#FCFCFC]` */
-  --surface-3: rgba(249, 250, 251, 0.3); /* ~ gray-50/30 */
+  --surface-2: #fbfbfd;
+  --surface-3: rgba(0, 0, 0, 0.02);
 
-  --border: #e5e7eb; /* gray-200 */
-  --border-strong: #1f2937; /* gray-800 */
+  /* Borders */
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.14);
 
-  --text: #111827; /* gray-900 */
-  --text-muted: #4b5563; /* gray-600 */
-  --text-subtle: #9ca3af; /* gray-400 */
+  /* Text */
+  --text: #1d1d1f;
+  --text-muted: #515154;
+  --text-subtle: #86868b;
 
   /* Interactive */
-  --surface-hover: rgba(243, 244, 246, 1); /* gray-100 */
-  --surface-hover-2: rgba(249, 250, 251, 0.5); /* gray-50/50 */
-  --border-focus: #d1d5db; /* gray-300 */
-  --ring: #d1d5db; /* neutral ring */
+  --surface-hover: rgba(0, 0, 0, 0.04);
+  --surface-hover-2: rgba(0, 0, 0, 0.025);
+  --border-focus: rgba(0, 113, 227, 0.4);
+  --ring: rgba(0, 113, 227, 0.22);
 
-  /* Backwards-compatible aliases (existing usage) */
+  /* Accent (SF Blue) */
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --accent-pressed: #006edb;
+  --accent-soft: rgba(0, 113, 227, 0.1);
+  --accent-border: rgba(0, 113, 227, 0.25);
+  --accent-fg: #ffffff;
+
+  /* Shadows (Apple-style layered) */
+  --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-pop: 0 18px 60px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  /* Motion */
+  --ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 360ms;
+
+  /* Aliases */
   --background: var(--bg);
   --foreground: var(--text);
 }
@@ -29,17 +53,28 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-firaCode);
-  --font-mono: var(--font-geist-mono);
+  --font-sans:
+    var(--font-inter), -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, "Cascadia Mono", "Roboto Mono", monospace;
 }
 
 @layer base {
+  html {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv11", "ss01", "ss03";
+  }
+
   body {
     @apply font-sans;
+    letter-spacing: -0.011em;
   }
 
   ::-webkit-scrollbar {
-    width: 5px;
+    width: 8px;
+    height: 8px;
   }
 
   ::-webkit-scrollbar-track {
@@ -47,38 +82,61 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--border, #e2e8f0);
-    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.14);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.24);
+    background-clip: padding-box;
+    border: 2px solid transparent;
   }
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--border, #e2e8f0) transparent;
+    scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
   }
 
   button:not([disabled]) {
     cursor: pointer;
   }
+
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--text);
+  }
 }
 
-/* Dark mode follows the same `.dark` convention as `next-shadcn-admin-dashboard`. */
 .dark {
-  --bg: #0e1116;
-  --surface: #161b22;
-  --surface-2: rgba(14, 17, 22, 0.5);
-  --surface-3: rgba(255, 255, 255, 0.04);
+  --bg: #0b0b0d;
+  --surface: #161618;
+  --surface-2: #131316;
+  --surface-3: rgba(255, 255, 255, 0.03);
 
-  --border: rgba(255, 255, 255, 0.12);
-  --border-strong: rgba(255, 255, 255, 0.18);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
 
-  --text: #ffffff;
-  --text-muted: rgba(255, 255, 255, 0.78);
-  --text-subtle: rgba(255, 255, 255, 0.55);
+  --text: #f5f5f7;
+  --text-muted: rgba(245, 245, 247, 0.72);
+  --text-subtle: rgba(245, 245, 247, 0.48);
 
   --surface-hover: rgba(255, 255, 255, 0.06);
   --surface-hover-2: rgba(255, 255, 255, 0.04);
-  --border-focus: rgba(255, 255, 255, 0.24);
-  --ring: rgba(255, 255, 255, 0.24);
+  --border-focus: rgba(10, 132, 255, 0.5);
+  --ring: rgba(10, 132, 255, 0.32);
+
+  --accent: #0a84ff;
+  --accent-hover: #1a8eff;
+  --accent-pressed: #0070d8;
+  --accent-soft: rgba(10, 132, 255, 0.14);
+  --accent-border: rgba(10, 132, 255, 0.3);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 1px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --shadow-pop: 0 24px 80px rgba(0, 0, 0, 0.7);
 }
 
 body {
@@ -86,6 +144,61 @@ body {
   color: var(--foreground);
 }
 
-.font-mono {
-  font-family: "JetBrains Mono", monospace;
+@keyframes md-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes md-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes md-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.md-fade-in {
+  animation: md-fade-in var(--dur-slow) var(--ease-apple) both;
+}
+
+.md-scale-in {
+  animation: md-scale-in var(--dur-base) var(--ease-apple) both;
+}
+
+.md-stagger > * {
+  animation: md-fade-in var(--dur-slow) var(--ease-apple) both;
+}
+.md-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.md-stagger > *:nth-child(2) { animation-delay: 40ms; }
+.md-stagger > *:nth-child(3) { animation-delay: 80ms; }
+.md-stagger > *:nth-child(4) { animation-delay: 120ms; }
+.md-stagger > *:nth-child(5) { animation-delay: 160ms; }
+.md-stagger > *:nth-child(6) { animation-delay: 200ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

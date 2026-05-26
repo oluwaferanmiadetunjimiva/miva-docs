@@ -49,14 +49,11 @@ export default function ServiceStatus({ lastModified, apiVersion }: Props) {
   }, [lastModified, nowMs]);
 
   return (
-    <div className="mt-2.5 flex items-center justify-between px-0.5">
-      <div className="flex items-center gap-2 text-[10px] font-medium tracking-wider text-gray-500 uppercase">
-        <span className="rounded bg-gray-200/50 px-1.5 py-0.5 font-mono font-semibold text-gray-600">
-          {apiVersion ? formatVersionBadge(apiVersion) : "—"}
-        </span>
-
-      </div>
-      <span className="text-[10px] font-medium text-gray-400">{updatedLabel}</span>
+    <div className="flex items-center justify-between px-0.5">
+      <span className="rounded-md bg-(--surface-3) px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-wide text-(--text-muted) ring-1 ring-inset ring-(--border)">
+        {apiVersion ? formatVersionBadge(apiVersion) : "—"}
+      </span>
+      <span className="text-[10px] font-medium text-(--text-subtle)">{updatedLabel}</span>
     </div>
   );
 }

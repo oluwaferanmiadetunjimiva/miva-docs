@@ -79,8 +79,7 @@ export default async function Page({ params, searchParams }: PageProps) {
       seedSalt={operation?.operationId}
     >
       <main className="relative flex min-w-0 flex-1 flex-col overflow-y-auto border-r border-(--border) bg-(--surface)">
-        <div className="pointer-events-none absolute inset-0 " />
-        <div className="relative mx-auto w-full max-w-4xl space-y-16 px-8 py-16">
+        <div className="relative mx-auto w-full max-w-4xl space-y-12 px-10 py-14">
           <Header
             method={method}
             path={pathFromSpec}

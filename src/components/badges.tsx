@@ -11,11 +11,31 @@ export function Method({ method, className }: MethodProps) {
   const key = method.toLowerCase();
 
   const styles: Record<string, { label: string; className: string }> = {
-    post: { label: "POST", className: "bg-emerald-100 border-emerald-200 text-emerald-800" },
-    get: { label: "GET", className: "bg-blue-100 border-blue-200 text-blue-800" },
-    patch: { label: "PATCH", className: "bg-amber-100 border-amber-200 text-amber-800" },
-    put: { label: "PUT", className: "bg-violet-100 border-violet-200 text-violet-800" },
-    delete: { label: "DELETE", className: "bg-rose-100 border-rose-200 text-rose-800" },
+    get: {
+      label: "GET",
+      className:
+        "bg-[#eaf2ff] text-[#0a66c2] ring-1 ring-inset ring-[#cfdcf2] dark:bg-[#0a84ff]/12 dark:text-[#8ec5ff] dark:ring-[#0a84ff]/25",
+    },
+    post: {
+      label: "POST",
+      className:
+        "bg-[#e7f6ee] text-[#117a3f] ring-1 ring-inset ring-[#c8e3d3] dark:bg-[#34c759]/12 dark:text-[#7ee2a3] dark:ring-[#34c759]/25",
+    },
+    put: {
+      label: "PUT",
+      className:
+        "bg-[#eee9ff] text-[#5d4ac2] ring-1 ring-inset ring-[#d5cdf0] dark:bg-[#bf5af2]/12 dark:text-[#d8b4f8] dark:ring-[#bf5af2]/25",
+    },
+    patch: {
+      label: "PATCH",
+      className:
+        "bg-[#fff4e0] text-[#8a5a0a] ring-1 ring-inset ring-[#f0dfb8] dark:bg-[#ff9f0a]/12 dark:text-[#ffd28a] dark:ring-[#ff9f0a]/25",
+    },
+    delete: {
+      label: "DELETE",
+      className:
+        "bg-[#fde9ea] text-[#b8232f] ring-1 ring-inset ring-[#f1c8cb] dark:bg-[#ff453a]/12 dark:text-[#ff9b95] dark:ring-[#ff453a]/25",
+    },
   };
 
   const style = styles[key];
@@ -24,7 +44,7 @@ export function Method({ method, className }: MethodProps) {
   return (
     <span
       className={cn(
-        "rounded-md border px-2 py-1 text-center font-mono text-[10px] font-semibold",
+        "inline-flex items-center justify-center rounded-md px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-wide",
         style.className,
         className,
       )}
@@ -39,5 +59,9 @@ type RequiredProps = {
 };
 
 export const Required = ({ className }: RequiredProps) => {
-  return <span className={cn("ml-1 text-red-500", className)}>*</span>;
+  return (
+    <span className={cn("ml-1 text-[#ff3b30] dark:text-[#ff453a]", className)} aria-label="required">
+      *
+    </span>
+  );
 };

@@ -87,15 +87,15 @@ export default async function Sidebar() {
     : Array.from(operationTagSet).map((name) => ({ name }));
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-(--border) bg-(--surface-2) lg:flex">
-      <Link href="/">
-        <div className="flex h-14 items-center border-b border-(--border) px-4">
-          <Image src="/logo.png" alt="miva" className="h-6 w-6" width={6} height={6} />
-          <span className="text-base font-semibold tracking-tight text-(--text)">Miva Docs</span>
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-(--border) bg-(--surface-2)/80 backdrop-blur-xl lg:flex">
+      <Link href="/" className="group">
+        <div className="flex h-14 items-center gap-2.5 border-b border-(--border) px-5 transition-colors duration-200 group-hover:bg-(--surface-hover-2)">
+          <Image src="/logo.png" alt="Miva" className="h-5 w-5" width={20} height={20} />
+          <span className="text-[15px] font-semibold tracking-tight text-(--text)">Miva Docs</span>
         </div>
       </Link>
 
-      <div className="border-b border-gray-200 bg-gray-50/50 p-3">
+      <div className="space-y-3 border-b border-(--border) px-4 py-4">
         <ServiceSelect initialSlug={initialSlug} />
         <Suspense fallback={null}>
           <ServiceStatus lastModified={meta.lastModified} apiVersion={meta.version} />
@@ -106,22 +106,22 @@ export default async function Sidebar() {
         <EndpointSearchModal operations={operations} />
       </Suspense>
 
-      <Suspense
-        fallback={<nav className="flex-1 space-y-8 overflow-y-auto px-3 py-6" aria-hidden />}
-      >
-        <nav className="flex-1 space-y-8 overflow-y-auto px-3 py-6">
+      <Suspense fallback={<nav className="flex-1 overflow-y-auto px-3 py-4" aria-hidden />}>
+        <nav className="flex-1 space-y-7 overflow-y-auto px-3 py-4">
           {tags.map((tag) => {
             const tagSlug = slugifyOpenApiTag(tag.name);
-            const tagOperations = operations.filter((op) => slugifyOpenApiTag(deriveTagNameFromOperation(op)) === tagSlug);
+            const tagOperations = operations.filter(
+              (op) => slugifyOpenApiTag(deriveTagNameFromOperation(op)) === tagSlug,
+            );
 
             if (tagOperations.length === 0) return null;
 
             return (
               <div key={tag.name}>
-                <h3 className="mb-3 px-2 text-[11px] font-semibold tracking-widest text-(--text-subtle) uppercase">
+                <h3 className="mb-2 px-2.5 text-[10.5px] font-semibold tracking-[0.12em] text-(--text-subtle) uppercase">
                   {titleCaseTagName(tag.name)}
                 </h3>
-                <ul className="space-y-1">
+                <ul className="space-y-0.5">
                   {tagOperations.map((op) => (
                     <NavItem
                       key={`${op.method}:${op.url}:${op.operationId}`}

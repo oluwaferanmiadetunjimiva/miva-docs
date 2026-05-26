@@ -2,8 +2,20 @@
 
 import { prettyPayload, copyToClipboard } from "@/lib/helpers";
 import { generateExampleFromSchema } from "@/lib/generateExampleFromSchema";
-import { Copy } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { useMemo, useState } from "react";
+import { cn } from "@/lib/cn";
+
+function statusToneClass(status: string): string {
+  const code = Number(status);
+  if (Number.isFinite(code)) {
+    if (code >= 200 && code < 300) return "text-[#117a3f] dark:text-[#7ee2a3]";
+    if (code >= 300 && code < 400) return "text-[#0a66c2] dark:text-[#8ec5ff]";
+    if (code >= 400 && code < 500) return "text-[#8a5a0a] dark:text-[#ffd28a]";
+    if (code >= 500) return "text-[#b8232f] dark:text-[#ff9b95]";
+  }
+  return "text-(--text-muted)";
+}
 
 type Props = {
   responses?: Record<string, unknown>;
@@ -65,6 +77,7 @@ export default function RequestResponse({ responses, schemas, seedSalt }: Props)
   }, [responses]);
 
   const [activeStatus, setActiveStatus] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const active = parsed.find((p) => p.status === activeStatus) ?? parsed[0];
 
@@ -84,60 +97,65 @@ export default function RequestResponse({ responses, schemas, seedSalt }: Props)
   if (!active) return null;
 
   return (
-    <section>
-      <h3 className="mb-4 border-b border-gray-100 pb-2 text-base font-semibold text-gray-900">Responses</h3>
+    <section className="md-fade-in">
+      <h3 className="mb-3 text-[13px] font-semibold tracking-tight text-(--text)">Responses</h3>
 
-      <div className="overflow-hidden rounded-xl border border-(--border) bg-(--surface) shadow-sm">
-        <div className="flex items-end justify-between border-b border-(--border) bg-(--surface-2) px-3 pt-3">
-          <div className="flex gap-2">
+      <div className="overflow-hidden rounded-xl border border-(--border) bg-(--surface) shadow-[var(--shadow-sm)]">
+        <div className="flex items-center justify-between border-b border-(--border) bg-(--surface-2) px-2.5 py-2">
+          <div className="inline-flex rounded-lg bg-(--surface-3) p-0.5 ring-1 ring-inset ring-(--border)">
             {parsed.map((p) => {
               const isActive = p.status === active.status;
               return (
                 <button
                   key={p.status}
                   onClick={() => setActiveStatus(p.status)}
-                  className={
+                  className={cn(
+                    "rounded-md px-2.5 py-1 font-mono text-[11.5px] font-semibold transition-all duration-200",
                     isActive
-                      ? "rounded-t-lg border-b-2 border-emerald-500 bg-white px-4 py-2.5 text-xs font-semibold text-emerald-700 shadow-[0_-2px_4px_rgba(0,0,0,0.02)]"
-                      : "rounded-t-lg border-b-2 border-transparent px-4 py-2.5 text-xs font-medium text-(--text-muted) transition-colors hover:bg-(--surface-hover-2) hover:text-(--text-muted)"
-                  }
+                      ? "bg-(--surface) shadow-[var(--shadow-xs)]"
+                      : "hover:bg-(--surface-hover-2)",
+                    isActive ? statusToneClass(p.status) : "text-(--text-muted)",
+                  )}
                 >
                   {p.status}
                 </button>
               );
             })}
           </div>
-          <div className="flex items-center gap-2 pb-1.5">
-            <button
-              className="flex items-center gap-1.5 rounded px-2 py-1 text-xs text-blue-600 transition-colors hover:bg-blue-50 hover:text-blue-700"
-              onClick={() => copyToClipboard(exampleText)}
-            >
-              <Copy className="h-3 w-3" />
-              Copy
-            </button>
-          </div>
+          <button
+            className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11.5px] text-(--text-muted) transition-colors duration-150 hover:bg-(--surface-hover) hover:text-(--text)"
+            onClick={() => {
+              copyToClipboard(exampleText);
+              setCopied(true);
+              window.setTimeout(() => setCopied(false), 1400);
+            }}
+          >
+            {copied ? <Check className="h-3 w-3 text-(--accent)" /> : <Copy className="h-3 w-3" />}
+            {copied ? "Copied" : "Copy"}
+          </button>
         </div>
-        <div className="bg-[#111827]">
-          <div className="flex items-center justify-between gap-4 border-b border-(--border-strong) bg-[rgba(31,41,55,0.5)] px-5 py-2.5 font-mono text-xs font-medium text-(--text-subtle)">
-            {active.contentType && <p>{active.contentType}</p>}
+        <div className="bg-[#0c0c10]">
+          <div className="flex items-center justify-between gap-4 border-b border-white/10 px-5 py-2 font-mono text-[11.5px] font-medium text-white/55">
+            <span>{active.contentType ?? "—"}</span>
+            <span className={cn("font-semibold tracking-wide", statusToneClass(active.status))}>{active.status}</span>
           </div>
-          <div className="flex items-center justify-between gap-4 border-b border-(--border-strong) bg-[rgba(31,41,55,0.5)] px-5 py-2.5 font-mono text-xs font-medium text-(--text-subtle)">
-            {active.description && <p className="text-xs text-[rgba(156,163,175,0.85)]">{active.description}</p>}
-          </div>
+          {active.description && (
+            <div className="border-b border-white/10 px-5 py-2 text-[12px] text-white/55">{active.description}</div>
+          )}
           <pre
-            className="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed text-[rgba(229,231,235,0.9)]"
+            className="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed text-white/85"
             style={{ tabSize: 2 }}
           >
             <code className="block">
               {exampleLines.length > 0 ? (
                 exampleLines.map((line, idx) => (
                   <div key={idx} className="grid grid-cols-[2.25rem_1fr] gap-4">
-                    <span className="text-right text-[rgba(156,163,175,0.8)] select-none">{idx + 1}</span>
+                    <span className="text-right text-white/35 select-none">{idx + 1}</span>
                     <span className="whitespace-pre">{line.length ? line : " "}</span>
                   </div>
                 ))
               ) : (
-                <div className="text-[rgba(156,163,175,0.85)]">No example available for this response.</div>
+                <div className="text-white/55">No example available for this response.</div>
               )}
             </code>
           </pre>

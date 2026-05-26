@@ -2,7 +2,8 @@
 
 import { Method } from "@/components/badges";
 import { copyToClipboard } from "@/lib/helpers";
-import { Copy } from "lucide-react";
+import { Check, Link2 } from "lucide-react";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -14,45 +15,54 @@ type Props = {
 };
 
 export default function Header({ method, description, path, summary }: Props) {
+  const [copied, setCopied] = useState(false);
+
   return (
-    <>
-      <header>
-        <div className="mb-6 flex items-center gap-4">
-          <Method method={method} className="px-2.5 py-1 text-xs" />
+    <header className="md-fade-in">
+      <div className="mb-5 flex items-center gap-3">
+        <Method method={method} className="px-2 py-0.5 text-[10.5px]" />
+        <h1 className="truncate font-mono text-[14px] tracking-tight text-(--text-muted)">{path}</h1>
+        <button
+          type="button"
+          onClick={() => {
+            copyToClipboard(window.location.href);
+            setCopied(true);
+            window.setTimeout(() => setCopied(false), 1400);
+          }}
+          aria-label="Copy page URL"
+          title={copied ? "Copied" : "Copy page URL"}
+          className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-md text-(--text-subtle) transition-all duration-200 ease-[var(--ease-apple)] hover:scale-105 hover:bg-(--surface-hover) hover:text-(--text) active:scale-95"
+        >
+          {copied ? (
+            <Check className="h-3.5 w-3.5 text-(--accent)" />
+          ) : (
+            <Link2 className="h-3.5 w-3.5" />
+          )}
+        </button>
+      </div>
 
-          <h1 className="font-mono text-lg text-gray-500">{path}</h1>
+      {summary && (
+        <h2 className="mb-3 text-[28px] leading-[1.15] font-semibold tracking-tight text-(--text)">
+          {summary}
+        </h2>
+      )}
 
-          <button
-            type="button"
-            className="rounded-md bg-transparent p-1 text-(--text-subtle) transition duration-150 hover:scale-120 hover:text-(--text) focus:scale-110 focus:text-(--text) focus:outline-none"
-            onClick={() => copyToClipboard(window.location.href)}
-            aria-label="Copy page URL"
-            title="Copy page URL"
+      {description && (
+        <div className="prose prose-sm max-w-3xl text-[14px] leading-relaxed text-(--text-muted) prose-headings:text-(--text) prose-strong:text-(--text) prose-a:text-(--accent) prose-code:rounded prose-code:bg-(--surface-3) prose-code:px-1 prose-code:py-0.5 prose-code:font-mono prose-code:text-[12.5px] prose-code:text-(--text) prose-pre:rounded-lg prose-pre:bg-(--surface-3) prose-pre:text-(--text)">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              a: ({ children, href, ...props }) => (
+                <a href={href} target="_blank" rel="noreferrer noopener" {...props}>
+                  {children}
+                </a>
+              ),
+            }}
           >
-            <Copy className="h-4 w-4" />
-          </button>
+            {description}
+          </ReactMarkdown>
         </div>
-
-        {summary && <h2 className="mb-4 text-3xl font-semibold tracking-tight text-gray-900">{summary}</h2>}
-        {description && (
-          <div className="prose prose-xs prose-headings:text-(--text-muted) prose-strong:text-(--text-muted) prose-a:text-(--text-muted) prose-code:text-(--text-muted) prose-pre:bg-(--surface) prose-pre:text-(--text-muted) prose-pre:border prose-pre:border-(--border) max-w-4xl rounded-lg bg-(--surface-hover) px-4 py-3 text-sm leading-relaxed text-gray-600">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                a: ({ children, href, ...props }) => (
-                  <a href={href} target="_blank" rel="noreferrer noopener" {...props}>
-                    {children}
-                  </a>
-                ),
-              }}
-            >
-              {description}
-            </ReactMarkdown>
-          </div>
-        )}
-      </header>
-
-      <hr className="border-(--border)" />
-    </>
+      )}
+    </header>
   );
 }
