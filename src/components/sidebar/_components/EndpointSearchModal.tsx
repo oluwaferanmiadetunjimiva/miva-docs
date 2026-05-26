@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { withEnvQuery } from "@/lib/docsNav";
 import { Search } from "lucide-react";
@@ -62,9 +63,14 @@ export default function EndpointSearchModal({ operations }: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [highlightIndex, setHighlightIndex] = useState(0);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const id = window.setTimeout(() => setDebouncedQuery(query), 200);
@@ -141,25 +147,8 @@ export default function EndpointSearchModal({ operations }: Props) {
 
   const hasQuery = debouncedQuery.trim().length > 0;
 
-  return (
-    <>
-      <div className="px-4 pt-3 pb-2">
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="flex w-full items-center gap-2 rounded-lg border border-(--border) bg-(--surface) py-1.5 pr-2 pl-2.5 text-left text-[12.5px] text-(--text-subtle) shadow-[var(--shadow-xs)] transition-all duration-150 hover:bg-(--surface-hover-2) hover:text-(--text-muted) focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) focus:outline-none"
-          aria-label="Search endpoints"
-        >
-          <Search className="h-3.5 w-3.5" />
-          <span className="flex-1">Search endpoints</span>
-          <kbd className="rounded border border-(--border) bg-(--surface-2) px-1.5 py-0.5 font-mono text-[10px] text-(--text-subtle)">
-            ⌘K
-          </kbd>
-        </button>
-      </div>
-
-      {isOpen && (
-        <div
+  const modal = isOpen ? (
+    <div
           className="md-fade-in fixed inset-0 z-50 flex items-start justify-center bg-black/30 p-4 pt-[12vh] backdrop-blur-md"
           role="dialog"
           aria-modal="true"
@@ -293,7 +282,26 @@ export default function EndpointSearchModal({ operations }: Props) {
             </div>
           </div>
         </div>
-      )}
+  ) : null;
+
+  return (
+    <>
+      <div className="px-4 pt-3 pb-2">
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="flex w-full items-center gap-2 rounded-lg border border-(--border) bg-(--surface) py-1.5 pr-2 pl-2.5 text-left text-[12.5px] text-(--text-subtle) shadow-[var(--shadow-xs)] transition-all duration-150 hover:bg-(--surface-hover-2) hover:text-(--text-muted) focus:border-(--border-focus) focus:ring-2 focus:ring-(--ring) focus:outline-none"
+          aria-label="Search endpoints"
+        >
+          <Search className="h-3.5 w-3.5" />
+          <span className="flex-1">Search endpoints</span>
+          <kbd className="rounded border border-(--border) bg-(--surface-2) px-1.5 py-0.5 font-mono text-[10px] text-(--text-subtle)">
+            ⌘K
+          </kbd>
+        </button>
+      </div>
+
+      {mounted && modal ? createPortal(modal, document.body) : null}
     </>
   );
 }
