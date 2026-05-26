@@ -1,8 +1,8 @@
-import Image from "next/image";
 import { Suspense } from "react";
 import { getOpenApiSpec, getOpenApiSpecMeta } from "@/lib/openapiSpec";
 import { getPrimaryOpenApiTag, slugifyOpenApiTag } from "@/lib/helpers";
 import NavItem from "@/components/sidebar/_components/NavItem";
+import SidebarSection from "@/components/sidebar/_components/SidebarSection";
 import EndpointSearchModal from "./_components/EndpointSearchModal";
 import Link from "next/link";
 import ServiceSelect from "./_components/ServiceSelect";
@@ -90,7 +90,8 @@ export default async function Sidebar() {
     <aside className="hidden w-64 shrink-0 flex-col border-r border-(--border) bg-(--surface-2)/80 backdrop-blur-xl lg:flex">
       <Link href="/" className="group">
         <div className="flex h-14 items-center gap-2.5 border-b border-(--border) px-5 transition-colors duration-200 group-hover:bg-(--surface-hover-2)">
-          <Image src="/logo.png" alt="Miva" className="h-5 w-5" width={20} height={20} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Miva" className="h-7 w-auto object-contain" />
           <span className="text-[15px] font-semibold tracking-tight text-(--text)">Miva Docs</span>
         </div>
       </Link>
@@ -117,22 +118,21 @@ export default async function Sidebar() {
             if (tagOperations.length === 0) return null;
 
             return (
-              <div key={tag.name}>
-                <h3 className="mb-2 px-2.5 text-[10.5px] font-semibold tracking-[0.12em] text-(--text-subtle) uppercase">
-                  {titleCaseTagName(tag.name)}
-                </h3>
-                <ul className="space-y-0.5">
-                  {tagOperations.map((op) => (
-                    <NavItem
-                      key={`${op.method}:${op.url}:${op.operationId}`}
-                      method={op.method}
-                      operationId={op.operationId}
-                      tags={op.tags}
-                      url={op.url}
-                    />
-                  ))}
-                </ul>
-              </div>
+              <SidebarSection
+                key={tag.name}
+                title={titleCaseTagName(tag.name)}
+                tagSlug={tagSlug}
+              >
+                {tagOperations.map((op) => (
+                  <NavItem
+                    key={`${op.method}:${op.url}:${op.operationId}`}
+                    method={op.method}
+                    operationId={op.operationId}
+                    tags={op.tags}
+                    url={op.url}
+                  />
+                ))}
+              </SidebarSection>
             );
           })}
         </nav>
